@@ -52,4 +52,18 @@
   .button-primary:hover {
     background-color: var(--color-text);
   }
+
+  .stat-component {
+    background-color: var(--color-component);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    color: var(--color-white);
+    width: 100%;
+  }
+
+  .stat-component p:first-child {
+    color: var(--color-text);
+    font-size: 0.875rem;
+    text-wrap: nowrap;
+  }
 }
