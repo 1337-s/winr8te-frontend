@@ -448,7 +448,26 @@ export default function PlayerStatsPage() {
               </div>
             </div>
             <div className="w-1/3 flex bg-component h-fit">
-              <div className="w-2/3">.</div>
+              <div className="w-2/3 flex flex-col justify-center items-center">
+                <Image
+                  src="/images/hit_head.png"
+                  alt="Hit Head"
+                  width={124}
+                  height={124}
+                />
+                <Image
+                  src="/images/hit_torso.png"
+                  alt="Hit Torso"
+                  width={124}
+                  height={124}
+                />
+                <Image
+                  src="/images/hit_legs.png"
+                  alt="Hit Legs"
+                  width={124}
+                  height={124}
+                />
+              </div>
               <div className="flex flex-col gap-2">
                 <div className="stat-component">
                   <p>Tête</p>
