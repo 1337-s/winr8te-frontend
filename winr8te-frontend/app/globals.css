@@ -66,4 +66,21 @@
     font-size: 0.875rem;
     text-wrap: nowrap;
   }
+
+  /* Fond granuleux avec gradient */
+  .grainy-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    filter: contrast(170%) brightness(1000%);
+    background: linear-gradient(
+        45deg,
+        var(--color-background),
+        rgba(0, 13, 61, 0.3)
+      ),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 198 198' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.98' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
 }
