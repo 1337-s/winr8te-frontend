@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import SearchBar from "@/components/SearchBar";
+import Tooltip from "@/components/Tooltip";
 
 export default function PlayerStatsPage() {
   const params = useParams();
@@ -42,41 +43,53 @@ export default function PlayerStatsPage() {
   }, [steamId]);
 
   const [relatedPlayers, setRelatedPlayers] = useState({});
+  const [playerAvatar, setPlayerAvatar] = useState(null);
 
   useEffect(() => {
     if (!playerData?.combat) return;
 
     const fetchRelatedPlayers = async () => {
-      const targets = [];
-      const favoriteId = playerData.combat.favoriteTarget?.steamId;
-      const nemesisId = playerData.combat.nemesis?.steamId;
+      const steamIds = [];
 
-      if (favoriteId) targets.push(favoriteId);
-      if (nemesisId && nemesisId !== favoriteId) targets.push(nemesisId);
+      // Ajouter le steamId du joueur principal
+      steamIds.push(steamId);
+
+      // Ajouter les steamIds des cibles et nemesis (premier de chaque tableau)
+      const favoriteId = playerData.combat.favoriteTarget?.[0]?.steamId;
+      const nemesisId = playerData.combat.nemesis?.[0]?.steamId;
+
+      if (favoriteId) steamIds.push(favoriteId);
+      if (nemesisId && nemesisId !== favoriteId) steamIds.push(nemesisId);
 
       try {
         const results = await Promise.all(
-          targets.map(async (id) => {
-            const res = await fetch(`${apiUrl}/player/${id}`);
-            if (!res.ok) throw new Error(`Erreur fetch cible ${id}`);
+          steamIds.map(async (id) => {
+            const res = await fetch(`${apiUrl}/steam/${id}`);
+            if (!res.ok) throw new Error(`Erreur fetch steam ${id}`);
             const data = await res.json();
-            return { id, avatar: data.player?.steam?.avatarFull || null };
+            return { id, avatar: data.avatarFull || null };
           })
         );
 
         const avatars = {};
         results.forEach(({ id, avatar }) => {
-          if (avatar) avatars[id] = avatar;
+          if (avatar) {
+            if (id === steamId) {
+              setPlayerAvatar(avatar);
+            } else {
+              avatars[id] = avatar;
+            }
+          }
         });
 
         setRelatedPlayers(avatars);
       } catch (err) {
-        console.error("Erreur récupération avatars des cibles :", err);
+        console.error("Erreur récupération avatars Steam :", err);
       }
     };
 
     fetchRelatedPlayers();
-  }, [playerData]);
+  }, [playerData, steamId]);
 
   if (loading) {
     return (
@@ -130,22 +143,30 @@ export default function PlayerStatsPage() {
           </div>
           {/* En-tête du joueur */}
           <div className="bg-component p-8 rounded flex gap-4">
-            <div>
-              <Image
-                src={playerData.player.steam.avatarFull}
-                alt={playerData.player.name}
-                width={100}
-                height={100}
-              />
-            </div>
+            {playerAvatar && (
+              <div>
+                <Image
+                  src={playerAvatar}
+                  alt={playerData.player.name}
+                  width={100}
+                  height={100}
+                />
+              </div>
+            )}
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <h1>{playerData.player.name}</h1>
-                <div
-                  className={`w-4 h-4 rounded-full ${
-                    playerData.player.isOnline ? "bg-green" : "bg-blue"
-                  }`}
-                ></div>
+                <Tooltip
+                  content={
+                    playerData.player.isOnline ? "Connecté" : "Déconnecté"
+                  }
+                >
+                  <div
+                    className={`w-4 h-4 rounded-full ${
+                      playerData.player.isOnline ? "bg-green" : "bg-blue"
+                    }`}
+                  ></div>
+                </Tooltip>
               </div>
 
               <span className="text-text -mt-4 z-10">
@@ -157,38 +178,58 @@ export default function PlayerStatsPage() {
             <div className="flex w-2/3 flex-col gap-2">
               <div className="flex gap-2">
                 <div className="stat-component">
-                  <p>KD</p>
-                  <p>{playerData.combat.kdRatio}</p>
+                  <Tooltip content={"Ratio de Kills/Deaths PvP"}>
+                    <p>KD</p>
+                    <span>{playerData.combat.kdRatio}</span>{" "}
+                  </Tooltip>
                 </div>
                 <div className="stat-component">
-                  <p>Kills</p>
-                  <p>{playerData.combat.pvpKills}</p>
+                  <Tooltip content={"Total des kills PvP"}>
+                    <p>Kills</p>
+                    <p>{playerData.combat.pvpKills}</p>{" "}
+                  </Tooltip>
                 </div>
                 <div className="stat-component">
-                  <p>Morts</p>
-                  <p>{playerData.combat.deaths}</p>
+                  <Tooltip
+                    content={
+                      "Total des morts PvP (les suicides ne sont pas pris en compte dans le calcul)"
+                    }
+                  >
+                    <p>Morts</p>
+                    <p>{playerData.combat.deaths}</p>
+                  </Tooltip>
                 </div>
                 <div className="stat-component">
-                  <p>Tirs</p>
-                  <p>{playerData.weapons.totalBulletsFired}</p>
+                  <Tooltip content={"Total des tirs"}>
+                    <p>Tirs</p>
+                    <p>{playerData.weapons.totalBulletsFired}</p>
+                  </Tooltip>
                 </div>
               </div>
               <div className="flex gap-2">
                 <div className="stat-component">
-                  <p>Avg. Distance</p>
-                  <p>{playerData.combat.avgDistance} m</p>
+                  <Tooltip content={"Distance moyenne des tirs"}>
+                    <p>Avg. Distance</p>
+                    <p>{playerData.combat.avgDistance} m</p>
+                  </Tooltip>
                 </div>
                 <div className="stat-component">
-                  <p>Max Distance</p>
-                  <p>{playerData.combat.maxDistance} m</p>
+                  <Tooltip content={"Distance maximale des tirs"}>
+                    <p>Max Distance</p>
+                    <p>{playerData.combat.maxDistance} m</p>
+                  </Tooltip>
                 </div>
                 <div className="stat-component">
-                  <p>Items Craftés</p>
-                  <p>{playerData.resources.totalCrafted}</p>
+                  <Tooltip content={"Total des items craftés"}>
+                    <p>Items Craftés</p>
+                    <p>{playerData.resources.totalCrafted}</p>
+                  </Tooltip>
                 </div>
                 <div className="stat-component">
-                  <p>Animaux Tués</p>
-                  <p>{playerData.combat.animalKills}</p>
+                  <Tooltip content={"Total des animaux tués"}>
+                    <p>Animaux Tués</p>
+                    <p>{playerData.combat.animalKills}</p>
+                  </Tooltip>
                 </div>
               </div>
 
@@ -201,12 +242,14 @@ export default function PlayerStatsPage() {
                     height={32}
                   />
                   <div className="stat-component-row">
-                    <p>Bois</p>
-                    <p>
-                      {playerData.resources.gathered.find(
-                        (r) => r.resource === "Wood"
-                      )?.total_amount || 0}
-                    </p>
+                    <Tooltip content={"Total de bois récolté"}>
+                      <p>Bois</p>
+                      <p>
+                        {playerData.resources.gathered.find(
+                          (r) => r.resource === "Wood"
+                        )?.total_amount || 0}
+                      </p>
+                    </Tooltip>
                   </div>
                 </div>
                 <div className="flex items-center w-full gap-2">
@@ -217,12 +260,14 @@ export default function PlayerStatsPage() {
                     height={32}
                   />
                   <div className="stat-component-row">
-                    <p>Pierre</p>
-                    <p>
-                      {playerData.resources.gathered.find(
-                        (r) => r.resource === "Stones"
-                      )?.total_amount || 0}
-                    </p>
+                    <Tooltip content={"Total de pierre récoltée"}>
+                      <p>Pierre</p>
+                      <p>
+                        {playerData.resources.gathered.find(
+                          (r) => r.resource === "Stones"
+                        )?.total_amount || 0}
+                      </p>
+                    </Tooltip>
                   </div>
                 </div>
                 <div className="flex items-center w-full gap-2">
@@ -233,12 +278,14 @@ export default function PlayerStatsPage() {
                     height={32}
                   />
                   <div className="stat-component-row">
-                    <p>Métal</p>
-                    <p>
-                      {playerData.resources.gathered.find(
-                        (r) => r.resource === "Metal Ore"
-                      )?.total_amount || 0}
-                    </p>{" "}
+                    <Tooltip content={"Total de minerai de métal récolté"}>
+                      <p>Métal</p>
+                      <p>
+                        {playerData.resources.gathered.find(
+                          (r) => r.resource === "Metal Ore"
+                        )?.total_amount || 0}
+                      </p>
+                    </Tooltip>
                   </div>
                 </div>
                 <div className="flex items-center w-full gap-2">
@@ -249,12 +296,14 @@ export default function PlayerStatsPage() {
                     height={32}
                   />
                   <div className="stat-component-row">
-                    <p>Soufre</p>
-                    <p>
-                      {playerData.resources.gathered.find(
-                        (r) => r.resource === "Sulfur Ore"
-                      )?.total_amount || 0}
-                    </p>
+                    <Tooltip content={"Total de minerai de soufre récolté"}>
+                      <p>Soufre</p>
+                      <p>
+                        {playerData.resources.gathered.find(
+                          (r) => r.resource === "Sulfur Ore"
+                        )?.total_amount || 0}
+                      </p>
+                    </Tooltip>
                   </div>
                 </div>
               </div>
@@ -267,8 +316,12 @@ export default function PlayerStatsPage() {
                     height={32}
                   />
                   <div className="stat-component-row">
-                    <p>Build</p>
-                    <p>{playerData.building.totalBuildings}</p>
+                    <Tooltip
+                      content={"Total de builds réalisés avec le building plan"}
+                    >
+                      <p>Build</p>
+                      <p>{playerData.building.totalBuildings}</p>
+                    </Tooltip>
                   </div>
                 </div>
                 <div className="flex items-center w-full gap-2">
@@ -279,12 +332,14 @@ export default function PlayerStatsPage() {
                     height={32}
                   />
                   <div className="stat-component-row">
-                    <p>Tourelle</p>
-                    <p>
-                      {playerData.building.deployables.find(
-                        (d) => d.deployable === "Auto Turret"
-                      )?.total_amount || 0}
-                    </p>
+                    <Tooltip content={"Total de tourelles posées"}>
+                      <p>Tourelle</p>
+                      <p>
+                        {playerData.building.deployables.find(
+                          (d) => d.deployable === "Auto Turret"
+                        )?.total_amount || 0}
+                      </p>
+                    </Tooltip>
                   </div>
                 </div>
                 <div className="flex items-center w-full gap-2">
@@ -295,10 +350,12 @@ export default function PlayerStatsPage() {
                     height={32}
                   />
                   <div className="stat-component-row">
-                    <p>TC</p>
-                    {playerData.building.deployables.find(
-                      (d) => d.deployable === "Tool Cupboard"
-                    )?.total_amount || 0}{" "}
+                    <Tooltip content={"Total de TC posées"}>
+                      <p>TC</p>
+                      {playerData.building.deployables.find(
+                        (d) => d.deployable === "Tool Cupboard"
+                      )?.total_amount || 0}
+                    </Tooltip>
                   </div>
                 </div>
                 <div className="flex items-center w-full gap-2">
@@ -309,10 +366,12 @@ export default function PlayerStatsPage() {
                     height={32}
                   />
                   <div className="stat-component-row">
-                    <p>Sleeping Bag</p>
-                    {playerData.building.deployables.find(
-                      (d) => d.deployable === "Sleeping Bag"
-                    )?.total_amount || 0}{" "}
+                    <Tooltip content={"Total de sleeping bags posés"}>
+                      <p>Sleeping Bag</p>
+                      {playerData.building.deployables.find(
+                        (d) => d.deployable === "Sleeping Bag"
+                      )?.total_amount || 0}
+                    </Tooltip>
                   </div>
                 </div>
               </div>
@@ -325,12 +384,14 @@ export default function PlayerStatsPage() {
                     height={32}
                   />
                   <div className="stat-component-row">
-                    <p>Roquette</p>
-                    <p>
-                      {playerData.weapons.bullets.find(
-                        (b) => b.bullet_name === "Rocket"
-                      )?.total_fired || 0}
-                    </p>
+                    <Tooltip content={"Total de roquettes tirées"}>
+                      <p>Roquette</p>
+                      <p>
+                        {playerData.weapons.bullets.find(
+                          (b) => b.bullet_name === "Rocket"
+                        )?.total_fired || 0}
+                      </p>
+                    </Tooltip>
                   </div>
                 </div>
                 <div className="flex items-center w-full gap-2">
@@ -341,12 +402,14 @@ export default function PlayerStatsPage() {
                     height={32}
                   />
                   <div className="stat-component-row">
-                    <p>C4</p>
-                    <p>
-                      {playerData.weapons.bullets.find(
-                        (b) => b.bullet_name === "Timed Explosive Charge"
-                      )?.total_fired || 0}
-                    </p>
+                    <Tooltip content={"Total de C4 posés"}>
+                      <p>C4</p>
+                      <p>
+                        {playerData.weapons.bullets.find(
+                          (b) => b.bullet_name === "Timed Explosive Charge"
+                        )?.total_fired || 0}
+                      </p>
+                    </Tooltip>
                   </div>
                 </div>
                 <div className="flex items-center w-full gap-2">
@@ -357,12 +420,14 @@ export default function PlayerStatsPage() {
                     height={32}
                   />
                   <div className="stat-component-row">
-                    <p>Satchel</p>
-                    <p>
-                      {playerData.weapons.bullets.find(
-                        (b) => b.bullet_name === "Satchel Charge"
-                      )?.total_fired || 0}
-                    </p>
+                    <Tooltip content={"Total de satchels posés"}>
+                      <p>Satchel</p>
+                      <p>
+                        {playerData.weapons.bullets.find(
+                          (b) => b.bullet_name === "Satchel Charge"
+                        )?.total_fired || 0}
+                      </p>
+                    </Tooltip>
                   </div>
                 </div>
                 <div className="flex items-center w-full gap-2">
@@ -373,17 +438,19 @@ export default function PlayerStatsPage() {
                     height={32}
                   />
                   <div className="stat-component-row">
-                    <p>Balle Explo</p>
-                    <p>
-                      {playerData.weapons.bullets
-                        .filter(
-                          (b) => b.bullet_name === "Explosive 5.56 Rifle Ammo"
-                        )
-                        .reduce(
-                          (total, b) => total + parseInt(b.total_fired),
-                          0
-                        )}
-                    </p>
+                    <Tooltip content={"Total de balles explosives tirées"}>
+                      <p>Balle Explo</p>
+                      <p>
+                        {playerData.weapons.bullets
+                          .filter(
+                            (b) => b.bullet_name === "Explosive 5.56 Rifle Ammo"
+                          )
+                          .reduce(
+                            (total, b) => total + parseInt(b.total_fired),
+                            0
+                          )}
+                      </p>
+                    </Tooltip>
                   </div>
                 </div>
               </div>
@@ -440,13 +507,17 @@ export default function PlayerStatsPage() {
                         : "opacity-30"
                     }`}
                   >
-                    <p>Tête</p>
-                    <p>
-                      {(playerData.combat.hitDistribution.head * 100).toFixed(
-                        1
-                      )}
-                      %
-                    </p>
+                    <Tooltip
+                      content={"Pourcentage de tirs mortels visant la tête"}
+                    >
+                      <p>Tête</p>
+                      <p>
+                        {(playerData.combat.hitDistribution.head * 100).toFixed(
+                          1
+                        )}
+                        %
+                      </p>
+                    </Tooltip>
                   </div>
                   <div
                     className={`stat-component-row py-0 transition-opacity duration-200 ${
@@ -455,13 +526,19 @@ export default function PlayerStatsPage() {
                         : "opacity-30"
                     }`}
                   >
-                    <p>Torse</p>
-                    <p>
-                      {(playerData.combat.hitDistribution.body * 100).toFixed(
-                        1
-                      )}
-                      %
-                    </p>
+                    <Tooltip
+                      content={
+                        "Pourcentage de tirs mortels visant le haut du corps"
+                      }
+                    >
+                      <p>Torse</p>
+                      <p>
+                        {(playerData.combat.hitDistribution.body * 100).toFixed(
+                          1
+                        )}
+                        %
+                      </p>
+                    </Tooltip>
                   </div>
                   <div
                     className={`stat-component-row py-0 transition-opacity duration-200 ${
@@ -470,13 +547,19 @@ export default function PlayerStatsPage() {
                         : "opacity-30"
                     }`}
                   >
-                    <p>Jambes</p>
-                    <p>
-                      {(playerData.combat.hitDistribution.legs * 100).toFixed(
-                        1
-                      )}
-                      %
-                    </p>
+                    <Tooltip
+                      content={
+                        "Pourcentage de tirs mortels visant le bas du corps"
+                      }
+                    >
+                      <p>Jambes</p>
+                      <p>
+                        {(playerData.combat.hitDistribution.legs * 100).toFixed(
+                          1
+                        )}
+                        %
+                      </p>
+                    </Tooltip>
                   </div>
                 </div>
               </div>
@@ -484,33 +567,37 @@ export default function PlayerStatsPage() {
                 <div className="flex items-center justify-between">
                   {/* Texte à gauche */}
                   <div>
-                    <p>Cible</p>
-                    {playerData.combat.favoriteTarget ? (
-                      <Link
-                        href={`/stats/${playerData.combat.favoriteTarget.steamId}`}
-                        className="link text-white"
-                      >
-                        {playerData.combat.favoriteTarget.name}
-                      </Link>
-                    ) : (
-                      <p>Aucune</p>
-                    )}
+                    <Tooltip
+                      content={`Joueur que ${playerData.player.name} a tué le plus de fois`}
+                    >
+                      <p>Cible</p>
+                      {playerData.combat.favoriteTarget?.[0] ? (
+                        <Link
+                          href={`/stats/${playerData.combat.favoriteTarget[0].steamId}`}
+                          className="link text-white"
+                        >
+                          {playerData.combat.favoriteTarget[0].name}
+                        </Link>
+                      ) : (
+                        <p>Aucune</p>
+                      )}
+                    </Tooltip>
                   </div>
 
                   {/* Avatar à droite dans un Link */}
                   {playerData.combat.favoriteTarget &&
                     relatedPlayers[
-                      playerData.combat.favoriteTarget.steamId
+                      playerData.combat.favoriteTarget[0]?.steamId
                     ] && (
                       <Link
-                        href={`/stats/${playerData.combat.favoriteTarget.steamId}`}
+                        href={`/stats/${playerData.combat.favoriteTarget[0].steamId}`}
                         className="ml-4 shrink-0"
                       >
                         <Image
                           src={
                             relatedPlayers[
-                              playerData.combat.favoriteTarget.steamId
-                            ]
+                              playerData.combat.favoriteTarget[0].steamId
+                            ] || "/images/default-avatar.png"
                           }
                           alt="Avatar cible"
                           width={44}
@@ -524,29 +611,33 @@ export default function PlayerStatsPage() {
                 <div className="flex items-center justify-between">
                   {/* Texte à gauche */}
                   <div>
-                    <p>Nemesis</p>
-                    {playerData.combat.nemesis ? (
-                      <Link
-                        href={`/stats/${playerData.combat.nemesis.steamId}`}
-                        className="link text-white"
-                      >
-                        {playerData.combat.nemesis.name}
-                      </Link>
-                    ) : (
-                      <p>Aucun</p>
-                    )}
+                    <Tooltip
+                      content={`Joueur ayant tué ${playerData.player.name} le plus de fois`}
+                    >
+                      <p>Nemesis</p>
+                      {playerData.combat.nemesis?.[0] ? (
+                        <Link
+                          href={`/stats/${playerData.combat.nemesis[0].steamId}`}
+                          className="link text-white"
+                        >
+                          {playerData.combat.nemesis[0].name}
+                        </Link>
+                      ) : (
+                        <p>Aucun</p>
+                      )}
+                    </Tooltip>
                   </div>
 
                   {/* Avatar à droite dans un Link */}
                   {playerData.combat.nemesis &&
-                    relatedPlayers[playerData.combat.nemesis.steamId] && (
+                    relatedPlayers[playerData.combat.nemesis[0]?.steamId] && (
                       <Link
-                        href={`/stats/${playerData.combat.nemesis.steamId}`}
+                        href={`/stats/$${playerData.combat.nemesis[0].steamId}`}
                         className="ml-4 shrink-0"
                       >
                         <Image
                           src={
-                            relatedPlayers[playerData.combat.nemesis.steamId]
+                            relatedPlayers[playerData.combat.nemesis[0].steamId]
                           }
                           alt="Avatar nemesis"
                           width={44}
@@ -558,70 +649,113 @@ export default function PlayerStatsPage() {
               </div>
             </div>
           </div>
+          <div className="mt-6">
+            <h4 className="text-white text-md mb-3">Meilleures armes</h4>
+            <div className="space-y-3">
+              {playerData.combat.weaponStats.map((weapon, index) => {
+                // Convertir le nom de l'arme pour le nom du fichier image
+                const weaponImageName = weapon.weapon
+                  .toLowerCase()
+                  .replace(/ /g, "_");
 
-          <div className="bg-component p-6 rounded border border-text/20">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
+                // Calculer les valeurs max pour les jauges (basé sur le top 3)
+                const topWeapons = playerData.combat.weaponStats.slice(0, 3);
+                const maxKills = Math.max(...topWeapons.map((w) => w.kills));
+                const maxAvgDistance = Math.max(
+                  ...topWeapons.map((w) => w.avgDistance)
+                );
+                const maxMaxDistance = Math.max(
+                  ...topWeapons.map((w) => w.maxDistance)
+                );
 
-            {/* Statistiques d'armes */}
-            {playerData.combat.weaponStats &&
-              playerData.combat.weaponStats.length > 0 && (
-                <div>
-                  <h3 className="text-white text-lg mb-3">
-                    Statistiques des armes
-                  </h3>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-text">
-                      <thead>
-                        <tr className="border-b border-text/20">
-                          <th className="text-left py-2">Arme</th>
-                          <th className="text-right py-2">Kills</th>
-                          <th className="text-right py-2">Distance moy.</th>
-                          <th className="text-right py-2">Distance max</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {playerData.combat.weaponStats.map((weapon, index) => (
-                          <tr key={index} className="border-b border-text/10">
-                            <td className="py-2 text-white">{weapon.weapon}</td>
-                            <td className="py-2 text-right">{weapon.kills}</td>
-                            <td className="py-2 text-right">
-                              {weapon.avgDistance}m
-                            </td>
-                            <td className="py-2 text-right">
-                              {weapon.maxDistance}m
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-          </div>
-          {/* Ressources */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Objets craftés */}
-            {playerData.resources.crafted &&
-              playerData.resources.crafted.length > 0 && (
-                <div className="bg-component p-6 rounded border border-text/20">
-                  <h2 className="text-white text-xl mb-4">Objets Craftés</h2>
-                  <div className="space-y-2">
-                    {playerData.resources.crafted
-                      .slice(0, 5)
-                      .map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex justify-between items-center"
-                        >
-                          <span className="text-text">{item.item}</span>
-                          <span className="text-white font-semibold">
-                            {item.total_amount}
-                          </span>
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center gap-3 bg-component/50 p-3 rounded"
+                  >
+                    {/* Image de l'arme */}
+                    <div className="w-12 h-12 flex items-center justify-center bg-component border border-text/20 rounded">
+                      <Image
+                        src={`/images/weapons/${weaponImageName}.png`}
+                        alt={weapon.weapon}
+                        width={40}
+                        height={40}
+                        className="object-contain"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                          e.target.nextSibling.style.display = "block";
+                        }}
+                      />
+                      <span className="text-white text-xl font-bold hidden">
+                        ?
+                      </span>
+                    </div>
+
+                    {/* Nom de l'arme */}
+                    <div className="w-24 flex-shrink-0">
+                      <p className="text-white text-sm font-medium">
+                        {weapon.weapon}
+                      </p>
+                    </div>
+
+                    {/* Jauges */}
+                    <div className="flex-1 space-y-1">
+                      {/* Jauge Kills */}
+                      <div className="flex items-center gap-2">
+                        <span className="text-text text-xs w-8">K:</span>
+                        <div className="flex-1 bg-background h-2 rounded">
+                          <div
+                            className="bg-red h-2 rounded transition-all duration-300"
+                            style={{
+                              width: `${(weapon.kills / maxKills) * 100}%`,
+                            }}
+                          ></div>
                         </div>
-                      ))}
+                        <span className="text-white text-xs w-8 text-right">
+                          {weapon.kills}
+                        </span>
+                      </div>
+
+                      {/* Jauge Distance Moyenne */}
+                      <div className="flex items-center gap-2">
+                        <span className="text-text text-xs w-8">Avg:</span>
+                        <div className="flex-1 bg-background h-2 rounded">
+                          <div
+                            className="bg-yellow h-2 rounded transition-all duration-300"
+                            style={{
+                              width: `${
+                                (weapon.avgDistance / maxAvgDistance) * 100
+                              }%`,
+                            }}
+                          ></div>
+                        </div>
+                        <span className="text-white text-xs w-8 text-right">
+                          {weapon.avgDistance}m
+                        </span>
+                      </div>
+
+                      {/* Jauge Distance Max */}
+                      <div className="flex items-center gap-2">
+                        <span className="text-text text-xs w-8">Max:</span>
+                        <div className="flex-1 bg-background h-2 rounded">
+                          <div
+                            className="bg-green h-2 rounded transition-all duration-300"
+                            style={{
+                              width: `${
+                                (weapon.maxDistance / maxMaxDistance) * 100
+                              }%`,
+                            }}
+                          ></div>
+                        </div>
+                        <span className="text-white text-xs w-8 text-right">
+                          {weapon.maxDistance}m
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })}
+            </div>
           </div>
         </div>
       </main>
