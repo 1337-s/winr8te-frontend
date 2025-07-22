@@ -13,6 +13,7 @@ export default function PlayerStatsPage() {
   const [playerData, setPlayerData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [hoveredBodyPart, setHoveredBodyPart] = useState(null);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -124,6 +125,7 @@ export default function PlayerStatsPage() {
         <div className="space-y-2 mt-10">
           {/* Barre de recherche en haut */}
           <div className="mb-6">
+            <h1>Statistiques</h1>
             <SearchBar compact={true} />
           </div>
 
@@ -138,7 +140,15 @@ export default function PlayerStatsPage() {
               />
             </div>
             <div className="flex flex-col">
-              <h1>{playerData.player.name}</h1>
+              <div className="flex items-center gap-2">
+                <div
+                  className={`w-4 h-4 rounded-full ${
+                    playerData.player.isOnline ? "bg-green" : "bg-blue"
+                  }`}
+                ></div>
+                <h1>{playerData.player.name}</h1>
+              </div>
+
               <span className="text-text -mt-4">
                 {playerData.player.steamId}
               </span>
@@ -200,12 +210,15 @@ export default function PlayerStatsPage() {
                       )}
                     </div>
 
-                    {/* Avatar à droite */}
+                    {/* Avatar à droite dans un Link */}
                     {playerData.combat.favoriteTarget &&
                       relatedPlayers[
                         playerData.combat.favoriteTarget.steamId
                       ] && (
-                        <div className="ml-4 shrink-0">
+                        <Link
+                          href={`/stats/${playerData.combat.favoriteTarget.steamId}`}
+                          className="ml-4 shrink-0"
+                        >
                           <Image
                             src={
                               relatedPlayers[
@@ -216,7 +229,7 @@ export default function PlayerStatsPage() {
                             width={48}
                             height={48}
                           />
-                        </div>
+                        </Link>
                       )}
                   </div>
                 </div>
@@ -238,10 +251,13 @@ export default function PlayerStatsPage() {
                       )}
                     </div>
 
-                    {/* Avatar à droite */}
+                    {/* Avatar à droite dans un Link */}
                     {playerData.combat.nemesis &&
                       relatedPlayers[playerData.combat.nemesis.steamId] && (
-                        <div className="ml-4 shrink-0">
+                        <Link
+                          href={`/stats/${playerData.combat.nemesis.steamId}`}
+                          className="ml-4 shrink-0"
+                        >
                           <Image
                             src={
                               relatedPlayers[playerData.combat.nemesis.steamId]
@@ -250,20 +266,20 @@ export default function PlayerStatsPage() {
                             width={48}
                             height={48}
                           />
-                        </div>
+                        </Link>
                       )}
                   </div>
                 </div>
               </div>
               <div className="bg-component pl-4 rounded flex ">
-                <div className="flex items-center w-full">
+                <div className="flex items-center w-full gap-2">
                   <Image
                     src="/images/w8_wood_icon.png"
                     alt="Bois"
                     width={32}
                     height={32}
                   />
-                  <div className="stat-component">
+                  <div className="stat-component-row">
                     <p>Bois</p>
                     <p>
                       {playerData.resources.gathered.find(
@@ -272,14 +288,14 @@ export default function PlayerStatsPage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center w-full">
+                <div className="flex items-center w-full gap-2">
                   <Image
                     src="/images/w8_stone_icon.png"
                     alt="Pierre"
                     width={32}
                     height={32}
                   />
-                  <div className="stat-component">
+                  <div className="stat-component-row">
                     <p>Pierre</p>
                     <p>
                       {playerData.resources.gathered.find(
@@ -288,14 +304,14 @@ export default function PlayerStatsPage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center w-full">
+                <div className="flex items-center w-full gap-2">
                   <Image
                     src="/images/w8_metal_icon.png"
                     alt="Métal"
                     width={32}
                     height={32}
                   />
-                  <div className="stat-component">
+                  <div className="stat-component-row">
                     <p>Métal</p>
                     <p>
                       {playerData.resources.gathered.find(
@@ -304,14 +320,14 @@ export default function PlayerStatsPage() {
                     </p>{" "}
                   </div>
                 </div>
-                <div className="flex items-center w-full">
+                <div className="flex items-center w-full gap-2">
                   <Image
                     src="/images/w8_sulfur_icon.png"
                     alt="Soufre"
                     width={32}
                     height={32}
                   />
-                  <div className="stat-component">
+                  <div className="stat-component-row">
                     <p>Soufre</p>
                     <p>
                       {playerData.resources.gathered.find(
@@ -322,26 +338,26 @@ export default function PlayerStatsPage() {
                 </div>
               </div>
               <div className="bg-component pl-4 rounded flex ">
-                <div className="flex items-center w-full">
+                <div className="flex items-center w-full gap-2">
                   <Image
                     src="/images/w8_building_plan_icon.png"
                     alt="Constructions"
                     width={32}
                     height={32}
                   />
-                  <div className="stat-component">
+                  <div className="stat-component-row">
                     <p>Build</p>
                     <p>{playerData.building.totalBuildings}</p>
                   </div>
                 </div>
-                <div className="flex items-center w-full">
+                <div className="flex items-center w-full gap-2">
                   <Image
                     src="/images/w8_autoturret_icon.png"
                     alt="Pierre"
                     width={32}
                     height={32}
                   />
-                  <div className="stat-component">
+                  <div className="stat-component-row">
                     <p>Tourelles</p>
                     <p>
                       {playerData.building.deployables.find(
@@ -350,40 +366,44 @@ export default function PlayerStatsPage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center w-full">
+                <div className="flex items-center w-full gap-2">
                   <Image
-                    src="/images/w8_metal_icon.png"
-                    alt="Métal"
+                    src="/images/w8_tc_icon.png"
+                    alt="Tool Cupboard"
                     width={32}
                     height={32}
                   />
-                  <div className="stat-component">
-                    <p>?</p>
-                    <p>?</p>
+                  <div className="stat-component-row">
+                    <p>TC</p>
+                    {playerData.building.deployables.find(
+                      (d) => d.deployable === "Tool Cupboard"
+                    )?.total_amount || 0}{" "}
                   </div>
                 </div>
-                <div className="flex items-center w-full">
+                <div className="flex items-center w-full gap-2">
                   <Image
-                    src="/images/w8_sulfur_icon.png"
-                    alt="Soufre"
+                    src="/images/w8_sleeping_bag_icon.png"
+                    alt="Sleeping Bag"
                     width={32}
                     height={32}
                   />
-                  <div className="stat-component">
-                    <p>?</p>
-                    <p>?</p>
+                  <div className="stat-component-row">
+                    <p>Sleeping Bag</p>
+                    {playerData.building.deployables.find(
+                      (d) => d.deployable === "Sleeping Bag"
+                    )?.total_amount || 0}{" "}
                   </div>
                 </div>
               </div>
               <div className="bg-component pl-4 rounded flex ">
-                <div className="flex items-center w-full">
+                <div className="flex items-center w-full gap-2">
                   <Image
                     src="/images/w8_rocket_icon.png"
                     alt="Roquette"
                     width={32}
                     height={32}
                   />
-                  <div className="stat-component">
+                  <div className="stat-component-row">
                     <p>Roquette</p>
                     <p>
                       {playerData.weapons.bullets.find(
@@ -392,14 +412,14 @@ export default function PlayerStatsPage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center w-full">
+                <div className="flex items-center w-full gap-2">
                   <Image
                     src="/images/w8_c4_icon.png"
                     alt="C4"
                     width={32}
                     height={32}
                   />
-                  <div className="stat-component">
+                  <div className="stat-component-row">
                     <p>C4</p>
                     <p>
                       {playerData.weapons.bullets.find(
@@ -408,14 +428,14 @@ export default function PlayerStatsPage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center w-full">
+                <div className="flex items-center w-full gap-2">
                   <Image
                     src="/images/w8_satchel_icon.png"
                     alt="Satchel"
                     width={32}
                     height={32}
                   />
-                  <div className="stat-component">
+                  <div className="stat-component-row">
                     <p>Satchel</p>
                     <p>
                       {playerData.weapons.bullets.find(
@@ -424,14 +444,14 @@ export default function PlayerStatsPage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center w-full">
+                <div className="flex items-center w-full gap-2">
                   <Image
                     src="/images/w8_explosive_ammo_icon.png"
                     alt="Balles explosives"
                     width={32}
                     height={32}
                   />
-                  <div className="stat-component">
+                  <div className="stat-component-row">
                     <p>Balle Explo</p>
                     <p>
                       {playerData.weapons.bullets
@@ -447,41 +467,81 @@ export default function PlayerStatsPage() {
                 </div>
               </div>
             </div>
-            <div className="w-1/3 flex bg-component h-fit">
-              <div className="w-2/3 flex flex-col justify-center items-center">
+            <div className="w-1/3 flex justify-center gap-2 p-4 rounded-[4px] bg-component h-fit">
+              <div className="flex flex-col justify-center items-center">
                 <Image
                   src="/images/hit_head.png"
                   alt="Hit Head"
                   width={124}
                   height={124}
+                  className={`transition-all cursor-pointer duration-200 ${
+                    hoveredBodyPart === "head"
+                      ? "scale-105 opacity-100"
+                      : "scale-100 opacity-70"
+                  }`}
+                  onMouseEnter={() => setHoveredBodyPart("head")}
+                  onMouseLeave={() => setHoveredBodyPart(null)}
                 />
                 <Image
                   src="/images/hit_torso.png"
                   alt="Hit Torso"
                   width={124}
                   height={124}
+                  className={`transition-all cursor-pointer duration-200 ${
+                    hoveredBodyPart === "torso"
+                      ? "scale-105 opacity-100"
+                      : "scale-100 opacity-70"
+                  }`}
+                  onMouseEnter={() => setHoveredBodyPart("torso")}
+                  onMouseLeave={() => setHoveredBodyPart(null)}
                 />
                 <Image
                   src="/images/hit_legs.png"
                   alt="Hit Legs"
                   width={124}
                   height={124}
+                  className={`transition-all cursor-pointer duration-200 ${
+                    hoveredBodyPart === "legs"
+                      ? "scale-105 opacity-100"
+                      : "scale-100 opacity-70"
+                  }`}
+                  onMouseEnter={() => setHoveredBodyPart("legs")}
+                  onMouseLeave={() => setHoveredBodyPart(null)}
                 />
               </div>
-              <div className="flex flex-col gap-2">
-                <div className="stat-component">
+
+              <div className="flex flex-col gap-2 justify-center gap-6">
+                <div
+                  className={`stat-component-row py-0 transition-opacity duration-200 ${
+                    hoveredBodyPart === null || hoveredBodyPart === "head"
+                      ? "opacity-100"
+                      : "opacity-30"
+                  }`}
+                >
                   <p>Tête</p>
                   <p>
                     {(playerData.combat.hitDistribution.head * 100).toFixed(1)}%
                   </p>
                 </div>
-                <div className="stat-component">
+                <div
+                  className={`stat-component-row py-0 transition-opacity duration-200 ${
+                    hoveredBodyPart === null || hoveredBodyPart === "torso"
+                      ? "opacity-100"
+                      : "opacity-30"
+                  }`}
+                >
                   <p>Torse</p>
                   <p>
                     {(playerData.combat.hitDistribution.body * 100).toFixed(1)}%
                   </p>
                 </div>
-                <div className="stat-component">
+                <div
+                  className={`stat-component-row py-0 transition-opacity duration-200 ${
+                    hoveredBodyPart === null || hoveredBodyPart === "legs"
+                      ? "opacity-100"
+                      : "opacity-30"
+                  }`}
+                >
                   <p>Jambes</p>
                   <p>
                     {(playerData.combat.hitDistribution.legs * 100).toFixed(1)}%
@@ -555,42 +615,6 @@ export default function PlayerStatsPage() {
                 </div>
               )}
           </div>
-
-          {/* Construction */}
-          {playerData.building && (
-            <div className="bg-component p-6 rounded border border-text/20">
-              <h2 className="text-white text-xl mb-4">Construction</h2>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center">
-                  <div className="text-white text-2xl font-bold">
-                    {playerData.building.totalBuildings}
-                  </div>
-                  <div className="text-text text-sm">Structures</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-white text-2xl font-bold">
-                    {playerData.building.totalDeployables}
-                  </div>
-                  <div className="text-text text-sm">Déployables</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Armes et munitions */}
-          {playerData.weapons && (
-            <div className="bg-component p-6 rounded border border-text/20">
-              <h2 className="text-white text-xl mb-4">
-                Statistiques des armes
-              </h2>
-              <div className="text-center">
-                <div className="text-white text-2xl font-bold">
-                  {playerData.weapons.totalBulletsFired}
-                </div>
-                <div className="text-text text-sm">Balles tirées</div>
-              </div>
-            </div>
-          )}
         </div>
       </main>
     </div>

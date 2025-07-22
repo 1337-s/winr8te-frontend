@@ -5,6 +5,10 @@
   --color-text: #818dba;
   --color-white: #d9dff3;
   --color-component: #000d3d;
+  --color-yellow: #dfe619;
+  --color-red: #cc1241;
+  --color-blue: #0033eb;
+  --color-green: #00de5d;
 
   --font-primary: "AldotheApache", sans-serif;
   --font-secondary: "Roboto", sans-serif;
@@ -17,6 +21,10 @@
     font-family: var(--font-primary);
     font-size: 3rem;
     color: var(--color-white);
+    position: relative;
+    z-index: 1;
+    text-shadow: 1px 0 var(--color-red), -1px 0 var(--color-blue),
+      0 1px var(--color-green), 1px -1px var(--color-yellow);
   }
 }
 
@@ -67,6 +75,19 @@
     text-wrap: nowrap;
   }
 
+  .stat-component-row {
+    background-color: var(--color-component);
+    padding: 1rem 0;
+    border-radius: var(--border-radius);
+    color: var(--color-white);
+    width: 100%;
+  }
+
+  .stat-component-row p:first-child {
+    color: var(--color-text);
+    font-size: 0.875rem;
+    text-wrap: nowrap;
+  }
   /* Fond granuleux avec gradient */
   .grainy-background {
     position: fixed;

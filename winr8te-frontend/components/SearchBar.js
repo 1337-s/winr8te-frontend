@@ -54,9 +54,7 @@ export default function SearchBar({ compact = false }) {
         <input
           type="text"
           placeholder={
-            compact
-              ? "Steam ID..."
-              : "Saisissez un Steam ID... (ex: 76561198012345678)"
+            compact ? "Saisissez un Steam ID..." : "Saisissez un Steam ID..."
           }
           className="search-input"
           value={steamId}
