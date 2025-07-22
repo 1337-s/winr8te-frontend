@@ -94,7 +94,6 @@ export default function PlayerStatsPage() {
   if (loading) {
     return (
       <div className="bg-background min-h-screen">
-        <div className="grainy-background"></div>
         <main className="parent py-8 relative z-10">
           <div className="text-white text-center">
             <div className="animate-pulse">Chargement des statistiques...</div>
@@ -107,7 +106,6 @@ export default function PlayerStatsPage() {
   if (error) {
     return (
       <div className="bg-background min-h-screen">
-        <div className="grainy-background"></div>
         <main className="parent py-8 relative z-10">
           <div className="text-red-400 text-center">
             <h2 className="text-xl mb-4">Erreur lors du chargement</h2>
@@ -121,7 +119,6 @@ export default function PlayerStatsPage() {
   if (!playerData) {
     return (
       <div className="bg-background min-h-screen">
-        <div className="grainy-background"></div>
         <main className="parent py-8 relative z-10">
           <div className="text-white text-center">
             <h2 className="text-xl">Aucune donnée trouvée pour ce joueur</h2>
@@ -133,16 +130,15 @@ export default function PlayerStatsPage() {
 
   return (
     <div className="bg-background min-h-screen">
-      <div className="grainy-background"></div>
       <main className="parent py-8 relative z-10 ">
-        <div className="space-y-2 mt-10">
+        <div className="space-y-2 mt-10 px-2 lg:px-0">
           {/* Barre de recherche en haut */}
           <div className="mb-6">
-            <h1>Statistiques</h1>
+            <h1 className="">Statistiques</h1>
             <SearchBar compact={true} />
           </div>
           {/* En-tête du joueur */}
-          <div className="bg-component p-8 rounded flex gap-4">
+          <div className="bg-component p-4 py-8 lg:p-8 rounded flex gap-4">
             {playerAvatar && (
               <div>
                 <Image
@@ -162,21 +158,21 @@ export default function PlayerStatsPage() {
                   }
                 >
                   <div
-                    className={`w-4 h-4 rounded-full ${
+                    className={`lg:w-4 lg:h-4 w-2 h-2 rounded-full ${
                       playerData.player.isOnline ? "bg-green" : "bg-blue"
                     }`}
                   ></div>
                 </Tooltip>
               </div>
 
-              <span className="text-text -mt-4 z-10">
+              <span className="text-text -mt-2 lg:-mt-4 z-10">
                 {playerData.player.steamId}
               </span>
             </div>
           </div>
-          <div className="flex gap-2 w-full">
-            <div className="flex w-2/3 flex-col gap-2">
-              <div className="flex gap-2">
+          <div className="flex flex-col lg:flex-row gap-2 w-full">
+            <div className="flex flex-col gap-2 lg:w-2/3">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                 <div className="stat-component">
                   <Tooltip content={"Ratio de Kills/Deaths PvP"}>
                     <p>KD</p>
@@ -206,7 +202,7 @@ export default function PlayerStatsPage() {
                   </Tooltip>
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 <div className="stat-component">
                   <Tooltip content={"Distance moyenne des tirs"}>
                     <p>Avg. Distance</p>
@@ -233,7 +229,7 @@ export default function PlayerStatsPage() {
                 </div>
               </div>
 
-              <div className="bg-component pl-4 rounded flex ">
+              <div className="bg-component pl-4 rounded grid grid-cols-2 md:grid-cols-4">
                 <div className="flex items-center w-full gap-2">
                   <Image
                     src="/images/w8_wood_icon.png"
@@ -307,7 +303,7 @@ export default function PlayerStatsPage() {
                   </div>
                 </div>
               </div>
-              <div className="bg-component pl-4 rounded flex ">
+              <div className="bg-component pl-4 rounded grid grid-cols-2 md:grid-cols-4">
                 <div className="flex items-center w-full gap-2">
                   <Image
                     src="/images/w8_building_plan_icon.png"
@@ -375,7 +371,7 @@ export default function PlayerStatsPage() {
                   </div>
                 </div>
               </div>
-              <div className="bg-component pl-4 rounded flex ">
+              <div className="bg-component pl-4 rounded grid grid-cols-2 md:grid-cols-4">
                 <div className="flex items-center w-full gap-2">
                   <Image
                     src="/images/w8_rocket_icon.png"
@@ -455,7 +451,7 @@ export default function PlayerStatsPage() {
                 </div>
               </div>
             </div>
-            <div className="w-1/3 flex flex-col gap-2">
+            <div className="lg:w-1/3 flex flex-col gap-2">
               <div className="flex justify-center gap-2 p-4 rounded-[4px] bg-component h-fit">
                 <div className="flex flex-col justify-center items-center">
                   <Image
@@ -464,9 +460,7 @@ export default function PlayerStatsPage() {
                     width={124}
                     height={124}
                     className={`transition-all cursor-pointer duration-200 ${
-                      hoveredBodyPart === "head"
-                        ? "scale-105 opacity-100"
-                        : "scale-100 opacity-70"
+                      hoveredBodyPart === "head" ? "opacity-100" : "opacity-70"
                     }`}
                     onMouseEnter={() => setHoveredBodyPart("head")}
                     onMouseLeave={() => setHoveredBodyPart(null)}
@@ -477,9 +471,7 @@ export default function PlayerStatsPage() {
                     width={124}
                     height={124}
                     className={`transition-all cursor-pointer duration-200 ${
-                      hoveredBodyPart === "torso"
-                        ? "scale-105 opacity-100"
-                        : "scale-100 opacity-70"
+                      hoveredBodyPart === "torso" ? "opacity-100" : "opacity-70"
                     }`}
                     onMouseEnter={() => setHoveredBodyPart("torso")}
                     onMouseLeave={() => setHoveredBodyPart(null)}
@@ -490,9 +482,7 @@ export default function PlayerStatsPage() {
                     width={124}
                     height={124}
                     className={`transition-all cursor-pointer duration-200 ${
-                      hoveredBodyPart === "legs"
-                        ? "scale-105 opacity-100"
-                        : "scale-100 opacity-70"
+                      hoveredBodyPart === "legs" ? "opacity-100" : "opacity-70"
                     }`}
                     onMouseEnter={() => setHoveredBodyPart("legs")}
                     onMouseLeave={() => setHoveredBodyPart(null)}
@@ -563,93 +553,97 @@ export default function PlayerStatsPage() {
                   </div>
                 </div>
               </div>
-              <div className="stat-component bg-blue/40">
-                <div className="flex items-center justify-between">
-                  {/* Texte à gauche */}
-                  <div>
-                    <Tooltip
-                      content={`Joueur que ${playerData.player.name} a tué le plus de fois`}
-                    >
-                      <p>Cible</p>
-                      {playerData.combat.favoriteTarget?.[0] ? (
+              <div className="flex lg:flex-col gap-2">
+                <div className="stat-component bg-blue/40">
+                  <div className="flex items-center justify-between">
+                    {/* Texte à gauche */}
+                    <div>
+                      <Tooltip
+                        content={`Joueur que ${playerData.player.name} a tué le plus de fois`}
+                      >
+                        <p>Cible</p>
+                        {playerData.combat.favoriteTarget?.[0] ? (
+                          <Link
+                            href={`/stats/${playerData.combat.favoriteTarget[0].steamId}`}
+                            className="link text-white"
+                          >
+                            {playerData.combat.favoriteTarget[0].name}
+                          </Link>
+                        ) : (
+                          <p>Aucune</p>
+                        )}
+                      </Tooltip>
+                    </div>
+
+                    {/* Avatar à droite dans un Link */}
+                    {playerData.combat.favoriteTarget &&
+                      relatedPlayers[
+                        playerData.combat.favoriteTarget[0]?.steamId
+                      ] && (
                         <Link
                           href={`/stats/${playerData.combat.favoriteTarget[0].steamId}`}
-                          className="link text-white"
+                          className="ml-4 shrink-0"
                         >
-                          {playerData.combat.favoriteTarget[0].name}
+                          <Image
+                            src={
+                              relatedPlayers[
+                                playerData.combat.favoriteTarget[0].steamId
+                              ] || "/images/default-avatar.png"
+                            }
+                            alt="Avatar cible"
+                            width={44}
+                            height={44}
+                          />
                         </Link>
-                      ) : (
-                        <p>Aucune</p>
                       )}
-                    </Tooltip>
                   </div>
-
-                  {/* Avatar à droite dans un Link */}
-                  {playerData.combat.favoriteTarget &&
-                    relatedPlayers[
-                      playerData.combat.favoriteTarget[0]?.steamId
-                    ] && (
-                      <Link
-                        href={`/stats/${playerData.combat.favoriteTarget[0].steamId}`}
-                        className="ml-4 shrink-0"
-                      >
-                        <Image
-                          src={
-                            relatedPlayers[
-                              playerData.combat.favoriteTarget[0].steamId
-                            ] || "/images/default-avatar.png"
-                          }
-                          alt="Avatar cible"
-                          width={44}
-                          height={44}
-                        />
-                      </Link>
-                    )}
                 </div>
-              </div>
-              <div className="stat-component bg-red/30">
-                <div className="flex items-center justify-between">
-                  {/* Texte à gauche */}
-                  <div>
-                    <Tooltip
-                      content={`Joueur ayant tué ${playerData.player.name} le plus de fois`}
-                    >
-                      <p>Nemesis</p>
-                      {playerData.combat.nemesis?.[0] ? (
-                        <Link
-                          href={`/stats/${playerData.combat.nemesis[0].steamId}`}
-                          className="link text-white"
-                        >
-                          {playerData.combat.nemesis[0].name}
-                        </Link>
-                      ) : (
-                        <p>Aucun</p>
-                      )}
-                    </Tooltip>
-                  </div>
-
-                  {/* Avatar à droite dans un Link */}
-                  {playerData.combat.nemesis &&
-                    relatedPlayers[playerData.combat.nemesis[0]?.steamId] && (
-                      <Link
-                        href={`/stats/$${playerData.combat.nemesis[0].steamId}`}
-                        className="ml-4 shrink-0"
+                <div className="stat-component bg-red/30">
+                  <div className="flex items-center justify-between">
+                    {/* Texte à gauche */}
+                    <div>
+                      <Tooltip
+                        content={`Joueur ayant tué ${playerData.player.name} le plus de fois`}
                       >
-                        <Image
-                          src={
-                            relatedPlayers[playerData.combat.nemesis[0].steamId]
-                          }
-                          alt="Avatar nemesis"
-                          width={44}
-                          height={44}
-                        />
-                      </Link>
-                    )}
+                        <p>Nemesis</p>
+                        {playerData.combat.nemesis?.[0] ? (
+                          <Link
+                            href={`/stats/${playerData.combat.nemesis[0].steamId}`}
+                            className="link text-white"
+                          >
+                            {playerData.combat.nemesis[0].name}
+                          </Link>
+                        ) : (
+                          <p>Aucun</p>
+                        )}
+                      </Tooltip>
+                    </div>
+
+                    {/* Avatar à droite dans un Link */}
+                    {playerData.combat.nemesis &&
+                      relatedPlayers[playerData.combat.nemesis[0]?.steamId] && (
+                        <Link
+                          href={`/stats/$${playerData.combat.nemesis[0].steamId}`}
+                          className="ml-4 shrink-0"
+                        >
+                          <Image
+                            src={
+                              relatedPlayers[
+                                playerData.combat.nemesis[0].steamId
+                              ]
+                            }
+                            alt="Avatar nemesis"
+                            width={44}
+                            height={44}
+                          />
+                        </Link>
+                      )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="mt-6">
+          {/* <div className="mt-6">
             <h4 className="text-white text-md mb-3">Meilleures armes</h4>
             <div className="space-y-3">
               {playerData.combat.weaponStats.map((weapon, index) => {
@@ -673,7 +667,6 @@ export default function PlayerStatsPage() {
                     key={index}
                     className="flex items-center gap-3 bg-component/50 p-3 rounded"
                   >
-                    {/* Image de l'arme */}
                     <div className="w-12 h-12 flex items-center justify-center bg-component border border-text/20 rounded">
                       <Image
                         src={`/images/weapons/${weaponImageName}.png`}
@@ -691,16 +684,13 @@ export default function PlayerStatsPage() {
                       </span>
                     </div>
 
-                    {/* Nom de l'arme */}
                     <div className="w-24 flex-shrink-0">
                       <p className="text-white text-sm font-medium">
                         {weapon.weapon}
                       </p>
                     </div>
 
-                    {/* Jauges */}
                     <div className="flex-1 space-y-1">
-                      {/* Jauge Kills */}
                       <div className="flex items-center gap-2">
                         <span className="text-text text-xs w-8">K:</span>
                         <div className="flex-1 bg-background h-2 rounded">
@@ -716,7 +706,6 @@ export default function PlayerStatsPage() {
                         </span>
                       </div>
 
-                      {/* Jauge Distance Moyenne */}
                       <div className="flex items-center gap-2">
                         <span className="text-text text-xs w-8">Avg:</span>
                         <div className="flex-1 bg-background h-2 rounded">
@@ -734,7 +723,6 @@ export default function PlayerStatsPage() {
                         </span>
                       </div>
 
-                      {/* Jauge Distance Max */}
                       <div className="flex items-center gap-2">
                         <span className="text-text text-xs w-8">Max:</span>
                         <div className="flex-1 bg-background h-2 rounded">
@@ -756,7 +744,7 @@ export default function PlayerStatsPage() {
                 );
               })}
             </div>
-          </div>
+          </div> */}
         </div>
       </main>
     </div>
