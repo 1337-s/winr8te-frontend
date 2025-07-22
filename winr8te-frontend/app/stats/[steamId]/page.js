@@ -128,7 +128,6 @@ export default function PlayerStatsPage() {
             <h1>Statistiques</h1>
             <SearchBar compact={true} />
           </div>
-
           {/* En-tête du joueur */}
           <div className="bg-component p-8 rounded flex gap-4">
             <div>
@@ -141,15 +140,15 @@ export default function PlayerStatsPage() {
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
+                <h1>{playerData.player.name}</h1>
                 <div
                   className={`w-4 h-4 rounded-full ${
                     playerData.player.isOnline ? "bg-green" : "bg-blue"
                   }`}
                 ></div>
-                <h1>{playerData.player.name}</h1>
               </div>
 
-              <span className="text-text -mt-4">
+              <span className="text-text -mt-4 z-10">
                 {playerData.player.steamId}
               </span>
             </div>
@@ -192,85 +191,7 @@ export default function PlayerStatsPage() {
                   <p>{playerData.combat.animalKills}</p>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <div className="stat-component">
-                  <div className="flex items-center justify-between">
-                    {/* Texte à gauche */}
-                    <div>
-                      <p className="font-semibold">Cible</p>
-                      {playerData.combat.favoriteTarget ? (
-                        <Link
-                          href={`/stats/${playerData.combat.favoriteTarget.steamId}`}
-                          className="link text-white"
-                        >
-                          {playerData.combat.favoriteTarget.name}
-                        </Link>
-                      ) : (
-                        <p>Aucune</p>
-                      )}
-                    </div>
 
-                    {/* Avatar à droite dans un Link */}
-                    {playerData.combat.favoriteTarget &&
-                      relatedPlayers[
-                        playerData.combat.favoriteTarget.steamId
-                      ] && (
-                        <Link
-                          href={`/stats/${playerData.combat.favoriteTarget.steamId}`}
-                          className="ml-4 shrink-0"
-                        >
-                          <Image
-                            src={
-                              relatedPlayers[
-                                playerData.combat.favoriteTarget.steamId
-                              ]
-                            }
-                            alt="Avatar cible"
-                            width={48}
-                            height={48}
-                          />
-                        </Link>
-                      )}
-                  </div>
-                </div>
-
-                <div className="stat-component">
-                  <div className="flex items-center justify-between">
-                    {/* Texte à gauche */}
-                    <div>
-                      <p className="font-semibold">Nemesis</p>
-                      {playerData.combat.nemesis ? (
-                        <Link
-                          href={`/stats/${playerData.combat.nemesis.steamId}`}
-                          className="link text-white"
-                        >
-                          {playerData.combat.nemesis.name}
-                        </Link>
-                      ) : (
-                        <p>Aucun</p>
-                      )}
-                    </div>
-
-                    {/* Avatar à droite dans un Link */}
-                    {playerData.combat.nemesis &&
-                      relatedPlayers[playerData.combat.nemesis.steamId] && (
-                        <Link
-                          href={`/stats/${playerData.combat.nemesis.steamId}`}
-                          className="ml-4 shrink-0"
-                        >
-                          <Image
-                            src={
-                              relatedPlayers[playerData.combat.nemesis.steamId]
-                            }
-                            alt="Avatar nemesis"
-                            width={48}
-                            height={48}
-                          />
-                        </Link>
-                      )}
-                  </div>
-                </div>
-              </div>
               <div className="bg-component pl-4 rounded flex ">
                 <div className="flex items-center w-full gap-2">
                   <Image
@@ -358,7 +279,7 @@ export default function PlayerStatsPage() {
                     height={32}
                   />
                   <div className="stat-component-row">
-                    <p>Tourelles</p>
+                    <p>Tourelle</p>
                     <p>
                       {playerData.building.deployables.find(
                         (d) => d.deployable === "Auto Turret"
@@ -467,89 +388,177 @@ export default function PlayerStatsPage() {
                 </div>
               </div>
             </div>
-            <div className="w-1/3 flex justify-center gap-2 p-4 rounded-[4px] bg-component h-fit">
-              <div className="flex flex-col justify-center items-center">
-                <Image
-                  src="/images/hit_head.png"
-                  alt="Hit Head"
-                  width={124}
-                  height={124}
-                  className={`transition-all cursor-pointer duration-200 ${
-                    hoveredBodyPart === "head"
-                      ? "scale-105 opacity-100"
-                      : "scale-100 opacity-70"
-                  }`}
-                  onMouseEnter={() => setHoveredBodyPart("head")}
-                  onMouseLeave={() => setHoveredBodyPart(null)}
-                />
-                <Image
-                  src="/images/hit_torso.png"
-                  alt="Hit Torso"
-                  width={124}
-                  height={124}
-                  className={`transition-all cursor-pointer duration-200 ${
-                    hoveredBodyPart === "torso"
-                      ? "scale-105 opacity-100"
-                      : "scale-100 opacity-70"
-                  }`}
-                  onMouseEnter={() => setHoveredBodyPart("torso")}
-                  onMouseLeave={() => setHoveredBodyPart(null)}
-                />
-                <Image
-                  src="/images/hit_legs.png"
-                  alt="Hit Legs"
-                  width={124}
-                  height={124}
-                  className={`transition-all cursor-pointer duration-200 ${
-                    hoveredBodyPart === "legs"
-                      ? "scale-105 opacity-100"
-                      : "scale-100 opacity-70"
-                  }`}
-                  onMouseEnter={() => setHoveredBodyPart("legs")}
-                  onMouseLeave={() => setHoveredBodyPart(null)}
-                />
-              </div>
+            <div className="w-1/3 flex flex-col gap-2">
+              <div className="flex justify-center gap-2 p-4 rounded-[4px] bg-component h-fit">
+                <div className="flex flex-col justify-center items-center">
+                  <Image
+                    src="/images/hit_head.png"
+                    alt="Hit Head"
+                    width={124}
+                    height={124}
+                    className={`transition-all cursor-pointer duration-200 ${
+                      hoveredBodyPart === "head"
+                        ? "scale-105 opacity-100"
+                        : "scale-100 opacity-70"
+                    }`}
+                    onMouseEnter={() => setHoveredBodyPart("head")}
+                    onMouseLeave={() => setHoveredBodyPart(null)}
+                  />
+                  <Image
+                    src="/images/hit_torso.png"
+                    alt="Hit Torso"
+                    width={124}
+                    height={124}
+                    className={`transition-all cursor-pointer duration-200 ${
+                      hoveredBodyPart === "torso"
+                        ? "scale-105 opacity-100"
+                        : "scale-100 opacity-70"
+                    }`}
+                    onMouseEnter={() => setHoveredBodyPart("torso")}
+                    onMouseLeave={() => setHoveredBodyPart(null)}
+                  />
+                  <Image
+                    src="/images/hit_legs.png"
+                    alt="Hit Legs"
+                    width={124}
+                    height={124}
+                    className={`transition-all cursor-pointer duration-200 ${
+                      hoveredBodyPart === "legs"
+                        ? "scale-105 opacity-100"
+                        : "scale-100 opacity-70"
+                    }`}
+                    onMouseEnter={() => setHoveredBodyPart("legs")}
+                    onMouseLeave={() => setHoveredBodyPart(null)}
+                  />
+                </div>
 
-              <div className="flex flex-col gap-2 justify-center gap-6">
-                <div
-                  className={`stat-component-row py-0 transition-opacity duration-200 ${
-                    hoveredBodyPart === null || hoveredBodyPart === "head"
-                      ? "opacity-100"
-                      : "opacity-30"
-                  }`}
-                >
-                  <p>Tête</p>
-                  <p>
-                    {(playerData.combat.hitDistribution.head * 100).toFixed(1)}%
-                  </p>
+                <div className="flex flex-col gap-2 justify-center gap-6">
+                  <div
+                    className={`stat-component-row py-0 transition-opacity duration-200 ${
+                      hoveredBodyPart === null || hoveredBodyPart === "head"
+                        ? "opacity-100"
+                        : "opacity-30"
+                    }`}
+                  >
+                    <p>Tête</p>
+                    <p>
+                      {(playerData.combat.hitDistribution.head * 100).toFixed(
+                        1
+                      )}
+                      %
+                    </p>
+                  </div>
+                  <div
+                    className={`stat-component-row py-0 transition-opacity duration-200 ${
+                      hoveredBodyPart === null || hoveredBodyPart === "torso"
+                        ? "opacity-100"
+                        : "opacity-30"
+                    }`}
+                  >
+                    <p>Torse</p>
+                    <p>
+                      {(playerData.combat.hitDistribution.body * 100).toFixed(
+                        1
+                      )}
+                      %
+                    </p>
+                  </div>
+                  <div
+                    className={`stat-component-row py-0 transition-opacity duration-200 ${
+                      hoveredBodyPart === null || hoveredBodyPart === "legs"
+                        ? "opacity-100"
+                        : "opacity-30"
+                    }`}
+                  >
+                    <p>Jambes</p>
+                    <p>
+                      {(playerData.combat.hitDistribution.legs * 100).toFixed(
+                        1
+                      )}
+                      %
+                    </p>
+                  </div>
                 </div>
-                <div
-                  className={`stat-component-row py-0 transition-opacity duration-200 ${
-                    hoveredBodyPart === null || hoveredBodyPart === "torso"
-                      ? "opacity-100"
-                      : "opacity-30"
-                  }`}
-                >
-                  <p>Torse</p>
-                  <p>
-                    {(playerData.combat.hitDistribution.body * 100).toFixed(1)}%
-                  </p>
+              </div>
+              <div className="stat-component bg-blue/40">
+                <div className="flex items-center justify-between">
+                  {/* Texte à gauche */}
+                  <div>
+                    <p>Cible</p>
+                    {playerData.combat.favoriteTarget ? (
+                      <Link
+                        href={`/stats/${playerData.combat.favoriteTarget.steamId}`}
+                        className="link text-white"
+                      >
+                        {playerData.combat.favoriteTarget.name}
+                      </Link>
+                    ) : (
+                      <p>Aucune</p>
+                    )}
+                  </div>
+
+                  {/* Avatar à droite dans un Link */}
+                  {playerData.combat.favoriteTarget &&
+                    relatedPlayers[
+                      playerData.combat.favoriteTarget.steamId
+                    ] && (
+                      <Link
+                        href={`/stats/${playerData.combat.favoriteTarget.steamId}`}
+                        className="ml-4 shrink-0"
+                      >
+                        <Image
+                          src={
+                            relatedPlayers[
+                              playerData.combat.favoriteTarget.steamId
+                            ]
+                          }
+                          alt="Avatar cible"
+                          width={44}
+                          height={44}
+                        />
+                      </Link>
+                    )}
                 </div>
-                <div
-                  className={`stat-component-row py-0 transition-opacity duration-200 ${
-                    hoveredBodyPart === null || hoveredBodyPart === "legs"
-                      ? "opacity-100"
-                      : "opacity-30"
-                  }`}
-                >
-                  <p>Jambes</p>
-                  <p>
-                    {(playerData.combat.hitDistribution.legs * 100).toFixed(1)}%
-                  </p>
+              </div>
+              <div className="stat-component bg-red/30">
+                <div className="flex items-center justify-between">
+                  {/* Texte à gauche */}
+                  <div>
+                    <p>Nemesis</p>
+                    {playerData.combat.nemesis ? (
+                      <Link
+                        href={`/stats/${playerData.combat.nemesis.steamId}`}
+                        className="link text-white"
+                      >
+                        {playerData.combat.nemesis.name}
+                      </Link>
+                    ) : (
+                      <p>Aucun</p>
+                    )}
+                  </div>
+
+                  {/* Avatar à droite dans un Link */}
+                  {playerData.combat.nemesis &&
+                    relatedPlayers[playerData.combat.nemesis.steamId] && (
+                      <Link
+                        href={`/stats/${playerData.combat.nemesis.steamId}`}
+                        className="ml-4 shrink-0"
+                      >
+                        <Image
+                          src={
+                            relatedPlayers[playerData.combat.nemesis.steamId]
+                          }
+                          alt="Avatar nemesis"
+                          width={44}
+                          height={44}
+                        />
+                      </Link>
+                    )}
                 </div>
               </div>
             </div>
           </div>
+
           <div className="bg-component p-6 rounded border border-text/20">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
 
@@ -589,7 +598,6 @@ export default function PlayerStatsPage() {
                 </div>
               )}
           </div>
-
           {/* Ressources */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Objets craftés */}

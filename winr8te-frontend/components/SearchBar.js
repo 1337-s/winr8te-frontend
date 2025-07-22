@@ -49,7 +49,7 @@ export default function SearchBar({ compact = false }) {
   };
 
   return (
-    <div className={compact ? "" : "mt-8"}>
+    <div>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input
           type="text"
@@ -69,25 +69,6 @@ export default function SearchBar({ compact = false }) {
           {loading ? "Recherche..." : "Rechercher"}
         </button>
       </form>
-
-      {!compact && (
-        <div className="mt-8 text-text">
-          <h2 className="text-white text-lg mb-4">
-            Comment trouver votre Steam ID ?
-          </h2>
-          <div className="space-y-2">
-            <p>1. Allez sur votre profil Steam</p>
-            <p>2. Copiez votre URL sur votre profil</p>
-            <p>
-              3. Utilisez un convertisseur Steam ID en ligne pour obtenir votre
-              Steam ID64
-            </p>
-            <p className="text-sm text-text/70">
-              Le Steam ID doit être au format 76561198XXXXXXXXX (17 chiffres)
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
