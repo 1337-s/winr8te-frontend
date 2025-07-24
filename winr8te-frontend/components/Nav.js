@@ -14,13 +14,13 @@ export default function Nav() {
           />
         </Link>
       </div>
-      <ul className="text-lg">
+      {/* <ul className="text-lg">
         <li>
           <Link href="/stats" className="link">
             Statistiques
           </Link>
         </li>
-      </ul>
+      </ul> */}
     </nav>
   );
 }

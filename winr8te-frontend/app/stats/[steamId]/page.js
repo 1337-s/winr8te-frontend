@@ -17,6 +17,7 @@ export default function PlayerStatsPage() {
   const [error, setError] = useState(null);
   const [hoveredBodyPart, setHoveredBodyPart] = useState(null);
   const [showAllWeapons, setShowAllWeapons] = useState(false);
+  const [showTargets, setShowTargets] = useState(true);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -132,7 +133,7 @@ export default function PlayerStatsPage() {
 
   return (
     <div className="bg-background min-h-screen">
-      <main className="parent py-8 relative z-10 ">
+      <main className="parent py-12 relative z-10 ">
         <div className="space-y-2 mt-10 px-2 lg:px-0">
           {/* Barre de recherche en haut */}
           <div className="mb-6">
@@ -755,88 +756,210 @@ export default function PlayerStatsPage() {
               </div>
             </div>
           </div>
-          {playerData?.combat?.weaponStats && (
-            <div className="mt-4">
-              <h4 className="text-text mb-2 text-sm">Statistiques des armes</h4>
+          <div className="flex flex-col sm:flex-row gap-2">
+            {playerData?.combat?.weaponStats && (
+              <div className="mt-4 sm:w-2/3">
+                <h4 className="text-text mb-3 text-sm">
+                  Statistiques des armes
+                </h4>
 
-              <div className="bg-component rounded-t-[4px] overflow-hidden">
-                {/* En-tête */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 border-b border-text/20 text-text text-xs">
-                  <div>Arme</div>
-                  <div className="text-center">Kills</div>
-                  <div className="text-center hidden sm:block">Dist. Moy.</div>
-                  <div className="text-center hidden sm:block">Dist. Max.</div>
-                </div>
-
-                {/* Visible Weapons */}
-                {(showAllWeapons
-                  ? playerData.combat.weaponStats
-                  : playerData.combat.weaponStats.slice(0, 5)
-                ).map((weapon, index) => {
-                  const weaponImageName = weapon.weapon
-                    .toLowerCase()
-                    .replace(/ /g, "_");
-
-                  return (
-                    <div
-                      key={index}
-                      className="grid grid-cols-2 sm:grid-cols-4 gap-4 px-4 py-2 items-center border-b border-text/20 last:border-b-0 hover:bg-text/5 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 flex items-center justify-center bg-background rounded border border-text/20">
-                          <Image
-                            src={`/images/weapons/${weaponImageName}.png`}
-                            alt={weapon.weapon}
-                            width={32}
-                            height={32}
-                            className="object-contain"
-                            onError={(e) => {
-                              e.target.style.display = "none";
-                              e.target.nextSibling.style.display = "block";
-                            }}
-                          />
-                          <span className="text-text text-xs hidden">?</span>
-                        </div>
-                        <span className="text-text text-sm">
-                          {weapon.weapon}
-                        </span>
-                      </div>
-
-                      <div className="text-center text-white text-sm">
-                        {weapon.kills}
-                      </div>
-                      <div className="text-center text-white text-sm hidden sm:block">
-                        {weapon.avgDistance}m
-                      </div>
-                      <div className="text-center text-white text-sm hidden sm:block">
-                        {weapon.maxDistance}m
-                      </div>
+                <div className="bg-component rounded-t-[4px] overflow-hidden">
+                  {/* En-tête */}
+                  <div className="grid grid-cols-2 sm:grid-cols-[2fr_1fr_1fr_1fr] gap-4 p-4 border-b border-text/20 text-text text-xs">
+                    <div>Arme</div>
+                    <div className="text-center">Kills</div>
+                    <div className="text-center hidden sm:block">
+                      Dist. Moy.
                     </div>
-                  );
-                })}
-              </div>
+                    <div className="text-center hidden sm:block">
+                      Dist. Max.
+                    </div>
+                  </div>
 
-              {/* Voir plus / Voir moins */}
-              {playerData.combat.weaponStats.length > 5 && (
-                <div className="bg-component border-t border-text/10 flex justify-center items-center p-2 rounded-b-[4px]">
-                  <button
-                    onClick={() => setShowAllWeapons((prev) => !prev)}
-                    className="text-text text-sm flex items-center gap-1 hover:underline"
-                  >
-                    {showAllWeapons ? (
-                      <>
-                        <ChevronUp size={16} strokeWidth={2} />
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown size={16} strokeWidth={2} />
-                      </>
-                    )}
-                  </button>
+                  {/* Visible Weapons */}
+                  {(showAllWeapons
+                    ? playerData.combat.weaponStats
+                    : playerData.combat.weaponStats.slice(0, 10)
+                  ).map((weapon, index) => {
+                    const weaponImageName = weapon.weapon
+                      .toLowerCase()
+                      .replace(/ /g, "_");
+
+                    return (
+                      <div
+                        key={index}
+                        className="grid grid-cols-2 sm:grid-cols-[2fr_1fr_1fr_1fr] gap-4 px-4 py-2 items-center border-b border-text/20 last:border-b-0 hover:bg-text/5 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 flex items-center justify-center bg-background rounded border border-text/20 shrink-0">
+                            <Image
+                              src={`/images/weapons/${weaponImageName}.png`}
+                              alt={weapon.weapon}
+                              width={32}
+                              height={32}
+                              className="object-contain"
+                              onError={(e) => {
+                                e.target.style.display = "none";
+                                e.target.nextSibling.style.display = "block";
+                              }}
+                            />
+                            <span className="text-text text-xs hidden">?</span>
+                          </div>
+                          <span className="text-text text-sm shrink-0">
+                            {weapon.weapon}
+                          </span>
+                        </div>
+
+                        <div className="text-center text-white text-sm">
+                          {weapon.kills}
+                        </div>
+                        <div className="text-center text-white text-sm hidden sm:block">
+                          {weapon.avgDistance}m
+                        </div>
+                        <div className="text-center text-white text-sm hidden sm:block">
+                          {weapon.maxDistance}m
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              )}
-            </div>
-          )}
+
+                {/* Voir plus / Voir moins */}
+                {playerData.combat.weaponStats.length > 5 && (
+                  <div className="bg-component border-t border-text/10 flex justify-center items-center p-2 rounded-b-[4px]">
+                    <button
+                      onClick={() => setShowAllWeapons((prev) => !prev)}
+                      className="text-text text-sm flex items-center gap-1 hover:underline"
+                    >
+                      {showAllWeapons ? (
+                        <>
+                          <ChevronUp size={16} strokeWidth={2} />
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown size={16} strokeWidth={2} />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+            {/* Tableau Nemesis/Cibles */}
+            {(playerData?.combat?.nemesis?.length > 0 ||
+              playerData?.combat?.favoriteTarget?.length > 0) && (
+              <div className="mt-4 sm:w-1/3">
+                {/* Toggle Header */}
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <h4 className="text-text text-sm">Top PvP</h4>
+                  <div className="flex bg-component rounded-[4px]">
+                    <button
+                      onClick={() => setShowTargets(true)}
+                      className={`px-3 py-1 text-xs rounded-[2px] transition-all ${
+                        showTargets
+                          ? "bg-blue/40 text-white"
+                          : "text-text hover:text-white"
+                      }`}
+                    >
+                      Cibles
+                    </button>
+                    <button
+                      onClick={() => setShowTargets(false)}
+                      className={`px-3 py-1 text-xs rounded-[2px] transition-all ${
+                        !showTargets
+                          ? "bg-red/30 text-white"
+                          : "text-text hover:text-white"
+                      }`}
+                    >
+                      Nemesis
+                    </button>
+                  </div>
+                </div>
+
+                <div className={`bg-component rounded-[4px] overflow-hidden `}>
+                  {/* En-tête du tableau */}
+                  <div className="grid grid-cols-[1fr_2fr_1.5fr] gap-2 p-4 border-b border-text/20 text-text text-xs">
+                    <div>Rang</div>
+                    <div>Joueur</div>
+                    <div className="text-center">
+                      {showTargets ? "Kill" : "Mort"}
+                    </div>
+                  </div>
+
+                  {/* Contenu du tableau */}
+                  {showTargets
+                    ? // Affichage des cibles
+                      playerData.combat.favoriteTarget
+                        ?.slice(0, 10)
+                        .map((target, index) => (
+                          <div
+                            key={target.steamId}
+                            className="grid grid-cols-[1fr_2fr_1.5fr] gap-2 px-4 py-3 items-center border-b border-text/20 last:border-b-0 hover:bg-blue/5 transition-colors"
+                          >
+                            <div className="flex items-center">
+                              <div className="w-8 h-8 bg-blue/20 rounded-full flex items-center justify-center text-blue text-xs font-bold">
+                                {index + 1}
+                              </div>
+                            </div>
+
+                            <div className="truncate max-w-[12rem] text-white">
+                              <Link
+                                href={`/stats/${target.steamId}`}
+                                className="link text-white text-sm hover:text-blue transition-colors"
+                              >
+                                {target.name}
+                              </Link>
+                            </div>
+
+                            <div className="text-center text-white text-sm font-medium">
+                              {target.killCount}
+                            </div>
+                          </div>
+                        ))
+                    : // Affichage des nemesis
+                      playerData.combat.nemesis
+                        ?.slice(0, 10)
+                        .map((nemesis, index) => (
+                          <div
+                            key={nemesis.steamId}
+                            className="grid grid-cols-[1fr_2fr_1.5fr] gap-2 px-4 py-3 items-center border-b border-text/20 last:border-b-0 hover:bg-blue/5 transition-colors"
+                          >
+                            <div className="flex items-center ">
+                              <div className="w-8 h-8 bg-red/20 rounded-full flex items-center justify-center text-red text-xs font-bold">
+                                {index + 1}
+                              </div>
+                            </div>
+
+                            <div className="truncate max-w-[12rem] text-white">
+                              <Link
+                                href={`/stats/${nemesis.steamId}`}
+                                className="link text-white text-sm hover:text-blue transition-colors"
+                              >
+                                {nemesis.name}
+                              </Link>
+                            </div>
+
+                            <div className="text-center text-white text-sm font-medium">
+                              {nemesis.deathCount}
+                            </div>
+                          </div>
+                        ))}
+
+                  {/* Message si aucune donnée */}
+                  {((showTargets &&
+                    (!playerData.combat.favoriteTarget ||
+                      playerData.combat.favoriteTarget.length === 0)) ||
+                    (!showTargets &&
+                      (!playerData.combat.nemesis ||
+                        playerData.combat.nemesis.length === 0))) && (
+                    <div className="p-8 text-center text-text">
+                      <p>Aucun {showTargets ? "cible" : "nemesis"} trouvé</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </div>
