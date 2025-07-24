@@ -12,8 +12,7 @@ export default function SearchBar({ compact = false }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const apiUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://217.154.27.52:3000/api";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const trimmedSteamId = steamId.trim();
 
     if (!trimmedSteamId) {
@@ -33,7 +32,7 @@ export default function SearchBar({ compact = false }) {
 
     try {
       const response = await fetch(`${apiUrl}/player/${trimmedSteamId}`, {
-        method: "HEAD",
+        method: "GET",
       });
 
       if (response.ok) {
