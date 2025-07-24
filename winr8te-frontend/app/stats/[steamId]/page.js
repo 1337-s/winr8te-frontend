@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SearchBar from "@/components/SearchBar";
 import Tooltip from "@/components/Tooltip";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 export default function PlayerStatsPage() {
   const params = useParams();
@@ -15,6 +16,7 @@ export default function PlayerStatsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [hoveredBodyPart, setHoveredBodyPart] = useState(null);
+  const [showAllWeapons, setShowAllWeapons] = useState(false);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -165,7 +167,7 @@ export default function PlayerStatsPage() {
                 </Tooltip>
               </div>
 
-              <span className="text-text -mt-2 lg:-mt-4 z-10">
+              <span className="text-text text-sm -mt-2 lg:-mt-2 z-10">
                 {playerData.player.steamId}
               </span>
             </div>
@@ -176,7 +178,7 @@ export default function PlayerStatsPage() {
                 <div className="stat-component">
                   <Tooltip content={"Ratio de Kills/Deaths PvP"}>
                     <p>KD</p>
-                    <span>{playerData.combat.kdRatio}</span>{" "}
+                    <p>{playerData.combat.kdRatio}</p>
                   </Tooltip>
                 </div>
                 <div className="stat-component">
@@ -450,15 +452,125 @@ export default function PlayerStatsPage() {
                   </div>
                 </div>
               </div>
+              <div className="bg-component pl-4 rounded grid grid-cols-2 md:grid-cols-4">
+                <div className="flex items-center w-full gap-2">
+                  <Image
+                    src="/images/w8_chicken_icon.png"
+                    alt="Poule"
+                    width={32}
+                    height={32}
+                  />
+                  <div className="stat-component-row">
+                    <Tooltip content={"Total de poules tuées"}>
+                      <p>Poule</p>
+                      <p>
+                        {playerData.combat.animalKillTypes.find(
+                          (a) => a.animal === "CHICKEN"
+                        )?.total || 0}
+                      </p>
+                    </Tooltip>
+                  </div>
+                </div>
+                <div className="flex items-center w-full gap-2">
+                  <Image
+                    src="/images/w8_stag_icon.png"
+                    alt="Cerf"
+                    width={32}
+                    height={32}
+                  />
+                  <div className="stat-component-row">
+                    <Tooltip content={"Total de cerfs tués"}>
+                      <p>Cerf</p>
+                      <p>
+                        {playerData.combat.animalKillTypes.find(
+                          (a) => a.animal === "STAG"
+                        )?.total || 0}
+                      </p>
+                    </Tooltip>
+                  </div>
+                </div>
+                <div className="flex items-center w-full gap-2">
+                  <Image
+                    src="/images/w8_boar_icon.png"
+                    alt="Sanglier"
+                    width={32}
+                    height={32}
+                  />
+                  <div className="stat-component-row">
+                    <Tooltip content={"Total de sangliers tués"}>
+                      <p>Sanglier</p>
+                      <p>
+                        {playerData.combat.animalKillTypes.find(
+                          (a) => a.animal === "BOAR"
+                        )?.total || 0}
+                      </p>
+                    </Tooltip>
+                  </div>
+                </div>
+                <div className="flex items-center w-full gap-2">
+                  <Image
+                    src="/images/w8_bear_icon.png"
+                    alt="Ours"
+                    width={32}
+                    height={32}
+                  />
+                  <div className="stat-component-row">
+                    <Tooltip content={"Total d'ours tués"}>
+                      <p>Ours</p>
+                      <p>
+                        {playerData.combat.animalKillTypes.find(
+                          (a) => a.animal === "BEAR"
+                        )?.total || 0}
+                      </p>
+                    </Tooltip>
+                  </div>
+                </div>
+                <div className="flex items-center w-full gap-2">
+                  <Image
+                    src="/images/w8_polar_bear_icon.png"
+                    alt="Ours"
+                    width={32}
+                    height={32}
+                  />
+                  <div className="stat-component-row">
+                    <Tooltip content={"Total d'ours polaires tués"}>
+                      <p>Ours polaire</p>
+                      <p>
+                        {playerData.combat.animalKillTypes.find(
+                          (a) => a.animal === "POLARBEAR"
+                        )?.total || 0}
+                      </p>
+                    </Tooltip>
+                  </div>
+                </div>
+                <div className="flex items-center w-full gap-2">
+                  <Image
+                    src="/images/w8_scientist_icon.png"
+                    alt="Scientifique"
+                    width={32}
+                    height={32}
+                  />
+                  <div className="stat-component-row">
+                    <Tooltip
+                      content={
+                        "Total de scientifiques tués (scientists, heavy scientists, tunnels dwellers, underwater dwellers)"
+                      }
+                    >
+                      <p>Scientifique</p>
+                      <p>{playerData.combat.pveKills}</p>
+                    </Tooltip>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="lg:w-1/3 flex flex-col gap-2">
-              <div className="flex justify-center gap-2 p-4 rounded-[4px] bg-component h-fit">
+              <div className="flex justify-center gap-2 p-7 rounded-[4px] bg-component h-fit">
                 <div className="flex flex-col justify-center items-center">
                   <Image
                     src="/images/hit_head.png"
                     alt="Hit Head"
-                    width={124}
-                    height={124}
+                    width={126}
+                    height={126}
                     className={`transition-all cursor-pointer duration-200 ${
                       hoveredBodyPart === "head" ? "opacity-100" : "opacity-70"
                     }`}
@@ -468,8 +580,8 @@ export default function PlayerStatsPage() {
                   <Image
                     src="/images/hit_torso.png"
                     alt="Hit Torso"
-                    width={124}
-                    height={124}
+                    width={126}
+                    height={126}
                     className={`transition-all cursor-pointer duration-200 ${
                       hoveredBodyPart === "torso" ? "opacity-100" : "opacity-70"
                     }`}
@@ -479,8 +591,8 @@ export default function PlayerStatsPage() {
                   <Image
                     src="/images/hit_legs.png"
                     alt="Hit Legs"
-                    width={124}
-                    height={124}
+                    width={126}
+                    height={126}
                     className={`transition-all cursor-pointer duration-200 ${
                       hoveredBodyPart === "legs" ? "opacity-100" : "opacity-70"
                     }`}
@@ -554,7 +666,7 @@ export default function PlayerStatsPage() {
                 </div>
               </div>
               <div className="flex lg:flex-col gap-2">
-                <div className="stat-component bg-blue/40">
+                <div className="stat-component py-3 bg-blue/40">
                   <div className="flex items-center justify-between">
                     {/* Texte à gauche */}
                     <div>
@@ -565,7 +677,7 @@ export default function PlayerStatsPage() {
                         {playerData.combat.favoriteTarget?.[0] ? (
                           <Link
                             href={`/stats/${playerData.combat.favoriteTarget[0].steamId}`}
-                            className="link text-white"
+                            className="link text-white text-sm"
                           >
                             {playerData.combat.favoriteTarget[0].name}
                           </Link>
@@ -591,14 +703,14 @@ export default function PlayerStatsPage() {
                               ] || "/images/default-avatar.png"
                             }
                             alt="Avatar cible"
-                            width={44}
-                            height={44}
+                            width={48}
+                            height={48}
                           />
                         </Link>
                       )}
                   </div>
                 </div>
-                <div className="stat-component bg-red/30">
+                <div className="stat-component py-3 bg-red/30">
                   <div className="flex items-center justify-between">
                     {/* Texte à gauche */}
                     <div>
@@ -609,7 +721,7 @@ export default function PlayerStatsPage() {
                         {playerData.combat.nemesis?.[0] ? (
                           <Link
                             href={`/stats/${playerData.combat.nemesis[0].steamId}`}
-                            className="link text-white"
+                            className="link text-white text-sm"
                           >
                             {playerData.combat.nemesis[0].name}
                           </Link>
@@ -633,8 +745,8 @@ export default function PlayerStatsPage() {
                               ]
                             }
                             alt="Avatar nemesis"
-                            width={44}
-                            height={44}
+                            width={48}
+                            height={48}
                           />
                         </Link>
                       )}
@@ -643,108 +755,88 @@ export default function PlayerStatsPage() {
               </div>
             </div>
           </div>
-          {/* <div className="mt-6">
-            <h4 className="text-white text-md mb-3">Meilleures armes</h4>
-            <div className="space-y-3">
-              {playerData.combat.weaponStats.map((weapon, index) => {
-                // Convertir le nom de l'arme pour le nom du fichier image
-                const weaponImageName = weapon.weapon
-                  .toLowerCase()
-                  .replace(/ /g, "_");
+          {playerData?.combat?.weaponStats && (
+            <div className="mt-4">
+              <h4 className="text-text mb-2 text-sm">Statistiques des armes</h4>
 
-                // Calculer les valeurs max pour les jauges (basé sur le top 3)
-                const topWeapons = playerData.combat.weaponStats.slice(0, 3);
-                const maxKills = Math.max(...topWeapons.map((w) => w.kills));
-                const maxAvgDistance = Math.max(
-                  ...topWeapons.map((w) => w.avgDistance)
-                );
-                const maxMaxDistance = Math.max(
-                  ...topWeapons.map((w) => w.maxDistance)
-                );
+              <div className="bg-component rounded-t-[4px] overflow-hidden">
+                {/* En-tête */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 border-b border-text/20 text-text text-xs">
+                  <div>Arme</div>
+                  <div className="text-center">Kills</div>
+                  <div className="text-center hidden sm:block">Dist. Moy.</div>
+                  <div className="text-center hidden sm:block">Dist. Max.</div>
+                </div>
 
-                return (
-                  <div
-                    key={index}
-                    className="flex items-center gap-3 bg-component/50 p-3 rounded"
+                {/* Visible Weapons */}
+                {(showAllWeapons
+                  ? playerData.combat.weaponStats
+                  : playerData.combat.weaponStats.slice(0, 5)
+                ).map((weapon, index) => {
+                  const weaponImageName = weapon.weapon
+                    .toLowerCase()
+                    .replace(/ /g, "_");
+
+                  return (
+                    <div
+                      key={index}
+                      className="grid grid-cols-2 sm:grid-cols-4 gap-4 px-4 py-2 items-center border-b border-text/20 last:border-b-0 hover:bg-text/5 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 flex items-center justify-center bg-background rounded border border-text/20">
+                          <Image
+                            src={`/images/weapons/${weaponImageName}.png`}
+                            alt={weapon.weapon}
+                            width={32}
+                            height={32}
+                            className="object-contain"
+                            onError={(e) => {
+                              e.target.style.display = "none";
+                              e.target.nextSibling.style.display = "block";
+                            }}
+                          />
+                          <span className="text-text text-xs hidden">?</span>
+                        </div>
+                        <span className="text-text text-sm">
+                          {weapon.weapon}
+                        </span>
+                      </div>
+
+                      <div className="text-center text-white text-sm">
+                        {weapon.kills}
+                      </div>
+                      <div className="text-center text-white text-sm hidden sm:block">
+                        {weapon.avgDistance}m
+                      </div>
+                      <div className="text-center text-white text-sm hidden sm:block">
+                        {weapon.maxDistance}m
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Voir plus / Voir moins */}
+              {playerData.combat.weaponStats.length > 5 && (
+                <div className="bg-component border-t border-text/10 flex justify-center items-center p-2 rounded-b-[4px]">
+                  <button
+                    onClick={() => setShowAllWeapons((prev) => !prev)}
+                    className="text-text text-sm flex items-center gap-1 hover:underline"
                   >
-                    <div className="w-12 h-12 flex items-center justify-center bg-component border border-text/20 rounded">
-                      <Image
-                        src={`/images/weapons/${weaponImageName}.png`}
-                        alt={weapon.weapon}
-                        width={40}
-                        height={40}
-                        className="object-contain"
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                          e.target.nextSibling.style.display = "block";
-                        }}
-                      />
-                      <span className="text-white text-xl font-bold hidden">
-                        ?
-                      </span>
-                    </div>
-
-                    <div className="w-24 flex-shrink-0">
-                      <p className="text-white text-sm font-medium">
-                        {weapon.weapon}
-                      </p>
-                    </div>
-
-                    <div className="flex-1 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-text text-xs w-8">K:</span>
-                        <div className="flex-1 bg-background h-2 rounded">
-                          <div
-                            className="bg-red h-2 rounded transition-all duration-300"
-                            style={{
-                              width: `${(weapon.kills / maxKills) * 100}%`,
-                            }}
-                          ></div>
-                        </div>
-                        <span className="text-white text-xs w-8 text-right">
-                          {weapon.kills}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <span className="text-text text-xs w-8">Avg:</span>
-                        <div className="flex-1 bg-background h-2 rounded">
-                          <div
-                            className="bg-yellow h-2 rounded transition-all duration-300"
-                            style={{
-                              width: `${
-                                (weapon.avgDistance / maxAvgDistance) * 100
-                              }%`,
-                            }}
-                          ></div>
-                        </div>
-                        <span className="text-white text-xs w-8 text-right">
-                          {weapon.avgDistance}m
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <span className="text-text text-xs w-8">Max:</span>
-                        <div className="flex-1 bg-background h-2 rounded">
-                          <div
-                            className="bg-green h-2 rounded transition-all duration-300"
-                            style={{
-                              width: `${
-                                (weapon.maxDistance / maxMaxDistance) * 100
-                              }%`,
-                            }}
-                          ></div>
-                        </div>
-                        <span className="text-white text-xs w-8 text-right">
-                          {weapon.maxDistance}m
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+                    {showAllWeapons ? (
+                      <>
+                        <ChevronUp size={16} strokeWidth={2} />
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown size={16} strokeWidth={2} />
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
-          </div> */}
+          )}
         </div>
       </main>
     </div>

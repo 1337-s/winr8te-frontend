@@ -36,11 +36,7 @@ export default function Tooltip({ content, children }) {
     >
       {children}
       {visible && (
-        <div
-          className="absolute z-10 bottom-full left-1/2 -translate-x-1/2 mb-2
-                        bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap
-                        opacity-100 shadow-lg"
-        >
+        <div className="absolute z-10 bottom-full left-1/2 -translate-x-1/2 mb-2 bg-black text-white text-xs px-2 py-1 rounded opacity-100 shadow-lg  min-w-fit max-w-48 whitespace-normal break-words">
           {content}
         </div>
       )}
