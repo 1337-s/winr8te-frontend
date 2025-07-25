@@ -141,7 +141,7 @@ export default function PlayerStatsPage() {
             <SearchBar compact={true} />
           </div>
           {/* En-tête du joueur */}
-          <div className="bg-component p-4 py-8 lg:p-8 rounded flex gap-4">
+          <div className="bg-component p-4 lg:p-8 rounded flex gap-4">
             {playerAvatar && (
               <div>
                 <Image
@@ -153,8 +153,8 @@ export default function PlayerStatsPage() {
               </div>
             )}
             <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <h1>{playerData.player.name}</h1>
+              <div className="flex items-center  gap-2">
+                <h1 className="leading-none">{playerData.player.name}</h1>
                 <Tooltip
                   content={
                     playerData.player.isOnline ? "Connecté" : "Déconnecté"
@@ -168,9 +168,15 @@ export default function PlayerStatsPage() {
                 </Tooltip>
               </div>
 
-              <span className="text-text text-sm -mt-2 lg:-mt-2 z-10">
+              <span className="text-text text-sm z-10">
                 {playerData.player.steamId}
               </span>
+              <div className="flex items-center gap-2 mt-6">
+                <p className="text-text text-xs">Temps joué :</p>
+                <span className="text-white text-sm">
+                  {playerData.player.playTime}
+                </span>
+              </div>
             </div>
           </div>
           <div className="flex flex-col lg:flex-row gap-2 w-full">
@@ -191,7 +197,7 @@ export default function PlayerStatsPage() {
                 <div className="stat-component">
                   <Tooltip
                     content={
-                      "Total des morts PvP (les suicides ne sont pas pris en compte dans le calcul)"
+                      "Total des morts (les suicides ne sont pas pris en compte dans le calcul)"
                     }
                   >
                     <p>Morts</p>
@@ -365,11 +371,22 @@ export default function PlayerStatsPage() {
                     height={32}
                   />
                   <div className="stat-component-row">
-                    <Tooltip content={"Total de sleeping bags posés"}>
+                    <Tooltip
+                      content={
+                        "Total de sleeping bags posés (inclut les beach towels)"
+                      }
+                    >
                       <p>Sleeping Bag</p>
-                      {playerData.building.deployables.find(
-                        (d) => d.deployable === "Sleeping Bag"
-                      )?.total_amount || 0}
+                      {Number(
+                        playerData.building.deployables.find(
+                          (d) => d.deployable === "Sleeping Bag"
+                        )?.total_amount || 0
+                      ) +
+                        Number(
+                          playerData.building.deployables.find(
+                            (d) => d.deployable === "Beach Towel"
+                          )?.total_amount || 0
+                        )}
                     </Tooltip>
                   </div>
                 </div>
@@ -736,7 +753,7 @@ export default function PlayerStatsPage() {
                     {playerData.combat.nemesis &&
                       relatedPlayers[playerData.combat.nemesis[0]?.steamId] && (
                         <Link
-                          href={`/stats/$${playerData.combat.nemesis[0].steamId}`}
+                          href={`/stats/${playerData.combat.nemesis[0].steamId}`}
                           className="ml-4 shrink-0"
                         >
                           <Image

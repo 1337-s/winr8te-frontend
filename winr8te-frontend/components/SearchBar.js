@@ -20,7 +20,6 @@ export default function SearchBar({ compact = false }) {
       return;
     }
 
-    // Validation basique format Steam ID (17 chiffres)
     if (!/^\d{17}$/.test(trimmedSteamId)) {
       alert(
         "Format Steam ID invalide. Il doit contenir exactement 17 chiffres."
